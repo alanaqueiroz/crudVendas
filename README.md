@@ -50,7 +50,7 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 ├── README.md (Documentação)
 ├── .env (Acesso ao banco)
 ├── banco.sql (Comandos SQL para criação do Banco de Dadados)
-├── docker-compose.yml (Containers)
+├── docker-compose.yml (Estruturação containers)
 └── modelagem.mwb (Modelagem do banco por MySQL Workbench)
 ```
 
@@ -76,6 +76,7 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 Representação da estrutura de um sistema de vendas. Ele permite gerenciar usuários, pedidos e produtos, além de relacionar pedidos a produtos específicos.
 
 ### Modelo Conceitual
+DER (Diagrama Entidade-Relacionamento)
 
 ![Modelo Conceitual](README/modelo-conceitual.png)
 
@@ -260,13 +261,13 @@ Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:888
 
 ---
 
-## REGISTRO
+## Registro
 
-Aqui vou deixar um registro das etapas que realizei durante o desenvolvimento do projeto:
+Aqui deixo um registro das etapas que realizei durante o desenvolvimento do projeto:
 
 ### 1. Criação do ambiente Docker
 
-### 2. Configuração do Nginx
+### 2. Estruturação e criação do servidor `nginx` na pasta `Docker`
 
 Criação do arquivo `docker/nginx/default.conf` certificando que as páginas de início index eram o `login.php` (Meu arquivo inicial)
 
@@ -292,10 +293,58 @@ server {
     }
 }
 ```
-### Foi aplicado:
 
-- **Clean-Code:** 
-  - **Nomes**: Foram usados nomes significativos nas variáveis, funções e classes, refletindo seu propósito claramente.
-  - **Legibilidade**: O código possui uma arquitetura facilmente compreensível.
-  - **Comentários**: Foram realizados comentários esclarecedores nos códigos.
-  - **Formatação**: Código uniforme de forma identada e com espeçamentos, facilitando a leitura.
+### 3. Configuração e estruturação do PHP da pasta `Docker` para consumir imagens Docker 
+
+### 4. Configuração do `.env` para o banco que estou usando:
+
+```nginx
+DB_DATABASE=sistema_vendas
+DB_USERNAME=root
+DB_PASSWORD=root
+```
+
+### 5. Mapeamento de portas no docker-compose.yml
+
+- Um serviço para PHP
+- Um serviço para Nginx
+- Um serviço para MySQL
+- Um serviço para phpMyAdmin
+
+### 6. Subindo as imagens Docker 
+
+```bash
+docker-compose up -d
+```
+
+### 7. Tratamento de Dados
+
+- Modelo Conceitual: Foi feito utilizando [MySQL WorkBench](https://dev.mysql.com/downloads/workbench/).
+- Modelo Lógico: criado no gerenciado de banco de dados MySQL-Front.
+- Criação do banco de dados no [MySQL-Front](https://mysql-front.software.informer.com/download/).
+
+### 8. Desenvolvimento das telas em PHP
+
+### 9. Criação das operações CRUD
+
+CRUD de Clientes: Criar, alterar, deletar e listar
+
+CRUD de pedido: Criar, alterar, deletar e listar
+
+- **Criar**: (Na tela `produtos.php`, ao selecionar os produtos que deseja comprar, e clicar no botão "Fazer Pedido", gera um novo pedido na pagina `pedidos.php`). 
+- **Deletar**: (Na tela `pedidos.php`, ao cliclar no potão deletar em um pedido, ele é excluído)
+- **Alterar**: (Na tela `pedidos.php`, ao cliclar no botão "Alterar Status" no pedido com status Pendente, vai para a pagina `editar_pedido.php`, onde é possível alterar seu status). 
+- **Listar**: (Na tela `produtos.php`, há uma paginação de 20 produtos filtráveis e ordenáveis).
+
+### 10. Aplicação do conceito Clean Code
+
+Foi aplicado o conceito em todas as telas PHP
+
+- **Nomes**: Foram usados nomes significativos nas variáveis, funções e classes, refletindo seu propósito claramente.
+- **Legibilidade**: O código possui uma arquitetura facilmente compreensível.
+- **Comentários**: Foram realizados comentários esclarecedores nos códigos.
+- **Formatação**: Código uniforme de forma identada e com espeçamentos, facilitando a leitura.
+
+### 11. Utilização do XAMPP
+
+Para verificar o funcionamento das telas, utilizei o servidor local [XAMPP](https://www.apachefriends.org/download.html).
