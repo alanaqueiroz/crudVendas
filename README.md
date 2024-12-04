@@ -15,14 +15,6 @@ Confira o Desafio: [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/testep
 
 ---
 
-## Demo
-
-Demonstração do projeto funcionando. Exibição da tabela com os dados do banco, logado como cliente, e demonstração das permissões:
-
-![GIF de demonstração](README/demo.gif)
-
----
-
 ## Estrutura do Projeto
 
 Aqui está a estrutura de pastas e a explicação de suas funções:
@@ -233,7 +225,7 @@ Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:888
 
 ### 5. Rodando o Projeto
 
-- Servidor Local: Você pode visualizar o projeto em um servidor local, por exemplo o [XAMPP](https://www.apachefriends.org/download.html), colocando a pasta do projeto dentro da pasta `htdocs` e acessar a url `http://localhost/testephp-hcosta/app/login.php`. 
+- Servidor Local: Você pode visualizar o projeto em um servidor local, por exemplo o [XAMPP](https://www.apachefriends.org/download.html), colocando a pasta do projeto dentro da pasta `htdocs` e acessar a url `http://localhost/testephp-hcosta/app/login.php`. Para funcionar é necessário ligar as portas Apache e MySQL.
 - Ou se preferir é possível acessar o projeto pela porta `8585` configurada no ngix do `docker-compose.yml`
 
 ---
@@ -332,8 +324,8 @@ CRUD de Clientes: Criar, alterar, deletar e listar
 CRUD de pedido: Criar, alterar, deletar e listar
 
 - **Criar**: (Na tela `produtos.php`, ao selecionar os produtos que deseja comprar, e clicar no botão "Fazer Pedido", gera um novo pedido na pagina `pedidos.php`). 
-- **Deletar**: (Na tela `pedidos.php`, ao cliclar no potão deletar em um pedido, ele é excluído)
 - **Alterar**: (Na tela `pedidos.php`, ao cliclar no botão "Alterar Status" no pedido com status Pendente, vai para a pagina `editar_pedido.php`, onde é possível alterar seu status). 
+- **Deletar**: (Na tela `pedidos.php`, ao cliclar no potão deletar em um pedido, ele é excluído)
 - **Listar**: (Na tela `produtos.php`, há uma paginação de 20 produtos filtráveis e ordenáveis).
 
 ### 10. Aplicação do conceito Clean Code

@@ -145,7 +145,7 @@ $total_pages = ceil($total_items / $limit); // Calculando o número total de pá
         <div class="content">
             <a href="pedidos.php" class="btn center-btn">Ver Pedidos</a>
             <br><br>
-            <h2>Vendas</h2>
+            <h2>Produtos á Venda</h2>
 
             <!-- Filtros -->
             <form method="get" action="">
