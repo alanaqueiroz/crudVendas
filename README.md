@@ -1,5 +1,4 @@
-
-## TESTEPHP-HCOSTA
+# DOCUMENTAÇÃO TESTEPHP-HCOSTA
 
 ## Descrição
 
@@ -10,7 +9,15 @@ Consiste na implementação uma aplicação Web utilizando o framework PHP Larav
 - Data de Início: `02/12/2024`
 - Data de Conclusão: `04/12/2024`
 
-Desafio: [Arquivo-TestePHP](github.com/alanaqueiroz/testephp-hcosta/README/Arquivo-TestePHP)
+Confira o Desafio: [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/README/Arquivo-TestePHP.pdf)
+
+---
+
+## Demo
+
+Demonstração do projeto funcionando. Exibição da tabela com os dados do banco, logado como cliente, e demonstração das permissões:
+
+![GIF de demonstração](README/demo.gif)
 
 ---
 
@@ -20,7 +27,6 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 
 ```
 /testephp-hcosta
-├── .docker/ (Configuração banco MySQL)
 ├── app/
 │   ├── service.pecas (API REST Laravel)
 │   ├── Services/ 
@@ -38,9 +44,11 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 │   │   └── Dockerfile
 │   ├── docker-compose.yml
 ├── README/ (Arquivos da documentação)
-├── READ.ME (Documentação)
+├── README.md (Documentação)
 ├── .env (Acesso ao banco)
+├── banco.sql (Comandos SQL para criação do Banco de Dadados)
 ├── docker-compose.yml (Containers)
+└── modelagem.mwb (Modelagem do banco por MySQL Workbench)
 ```
 
 ### Detalhes dos Arquivos
@@ -50,7 +58,7 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
    - Um serviço para PHP
    - Um serviço para Nginx
    - Um serviço para MySQL
-   - Um serviço para phpmyadmin
+   - Um serviço para phpMyAdmin
 
 2. **Dockerfile** (dentro de `docker/php/`)  
    Define o ambiente do PHP. Adicione extensões como `pdo_mysql`, `mbstring`, etc.
@@ -60,11 +68,84 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 
 ---
 
+## Estrutura do Banco de Dados
+
+Representação a modelagem de um sistema de vendas. Ele permite gerenciar usuários, pedidos e produtos, além de relacionar pedidos a produtos específicos.
+
+### Modelagem
+
+![Imagem Modelagem](README/modelagem-img.png)
+Essa modelagem foi desenvolvida no [MySQL WorkBench](https://dev.mysql.com/downloads/workbench/).
+ O Arquivo da modelagem se encontra no diretório do projeto com o titulo `modelagem.mwb`
+
+
+### 1. **Tabela `users`**
+Armazena informações sobre os usuários do sistema.
+
+- **Campos:**
+  - `id`: Identificador único do usuário (chave primária).
+  - `username`: Nome de usuário único.
+  - `password`: Senha do usuário.
+  - `role`: Papel do usuário (`cliente` ou `vendedor`).
+  - `created_at`: Data de criação do registro.
+  - `updated_at`: Data da última atualização do registro.
+
+### 2. **Tabela `orders`**
+Armazena informações sobre os pedidos realizados pelos clientes.
+
+- **Campos:**
+  - `id`: Identificador único do pedido (chave primária).
+  - `user_id`: Identificador do usuário que realizou o pedido (chave estrangeira).
+  - `status`: Status do pedido (`pendente`, `pago`, `finalizado`).
+  - `created_at`: Data de criação do pedido.
+  - `updated_at`: Data da última atualização do pedido.
+
+- **Relacionamento:**
+  - Relacionado à tabela `users` via `user_id`.
+  - **Restrição:** `ON DELETE CASCADE` - Exclui os pedidos se o usuário for removido.
+
+### 3. **Tabela `products`**
+Armazena os produtos disponíveis para venda.
+
+- **Campos:**
+  - `id`: Identificador único do produto (chave primária).
+  - `name`: Nome do produto.
+  - `price`: Preço do produto.
+
+### 4. **Tabela `order_products`**
+Relaciona pedidos com produtos específicos, permitindo que um pedido tenha múltiplos produtos e quantidades.
+
+- **Campos:**
+  - `order_id`: Identificador do pedido (chave estrangeira).
+  - `product_id`: Identificador do produto (chave estrangeira).
+  - `quantity`: Quantidade de um produto específico no pedido.
+
+- **Relacionamento:**
+  - Relacionado à tabela `orders` via `order_id`.
+  - Relacionado à tabela `products` via `product_id`.
+  - **Restrição:** `ON DELETE CASCADE` - Exclui os relacionamentos se o pedido ou produto for removido.
+
+---
+
+## O que foi aplicado?
+
+Tecnologias: Docker, Laravel, PHP, HTML, CSS, Javascript.
+
+##### CLEAN-CODE: 
+- Nomes: Foram usados nomes significativos nas variáveis, funções e classes, refletindo seu propósito claramente.
+- Legibilidade: O código possui uma arquitetura facilmente compreensível.
+- Comentários: Foram realizados comentários esclarecedores nos códigos.
+- Formatação: Código uniforme de forma identada e com espeçamentos, facilitando a leitura.
+
+---
+
 ## REGISTRO
 
-Aqui vou deixar um registro das etapas realizei durante o desenvolvimento do projeto
+Aqui vou deixar um registro das etapas que realizei durante o desenvolvimento do projeto:
 
-### 1. Configuração do Nginx
+### Criação do ambiente Docker
+
+### Configuração do Nginx
 
 Criação do arquivo `docker/nginx/default.conf` certificando que as páginas de início index eram o `login.php` (Meu arquivo inicial)
 
@@ -120,7 +201,7 @@ Para rodar o projeto, segui os passos a seguir:
 
 ### 1. Clone o Repositório
 
-Clonar meu projeto:
+Clonar o projeto:
 ```bash
 git clone https://github.com/alanaqueiroz/testephp-hcosta.git
 cd testephp-hcosta
@@ -134,11 +215,9 @@ docker-compose up -d
 
 ### 3. Crie o banco de dados
 
-No diretório principal desse projeto, há um arquivo SQL com o nome `sistema_vendas.sql`, nele deixei os comandos necessarios para criar o banco. Rode-os em um gerenciador de banco de dados da sua preferência. 
+No diretório principal desse projeto, há um arquivo SQL com o nome `banco.sql`, nele deixei os comandos necessarios para criar o banco. Rode-os em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
 
-Utilizei o [MySQL-Front](https://mysql-front.software.informer.com/download/).
-
-Caso opte por gerar o banco pelo MyPHPAdmin, ele fica disponível `localhost:8888`, conforme a porta configurada do arquivo `docker-composer.yml`.
+Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:8888`, conforme a porta configurada do arquivo `docker-composer.yml`.
 
 ### 4. Rodando o Projeto
 
