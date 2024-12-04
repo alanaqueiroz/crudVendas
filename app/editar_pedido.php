@@ -16,12 +16,10 @@ $order_id = $_GET['id'];
 $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
-// Se o usuário for um cliente, ele só pode editar seus próprios pedidos
 if ($role == 'cliente') {
     $stmt = $conn->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?");
     $stmt->bind_param('ii', $order_id, $user_id);
 } else {
-    // Administrador e vendedor podem editar qualquer pedido
     $stmt = $conn->prepare("SELECT * FROM orders WHERE id = ?");
     $stmt->bind_param('i', $order_id);
 }
@@ -32,12 +30,9 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $order = $result->fetch_assoc();
 
-    // Verificar se o status do pedido permite edição
     if ($order['status'] == 'pendente') {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $new_status = $_POST['status'];
-
-            // Atualizar o status do pedido
             $update_stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
             $update_stmt->bind_param('si', $new_status, $order_id);
             if ($update_stmt->execute()) {

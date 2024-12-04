@@ -15,32 +15,35 @@ if ($conn->connect_error) {
 $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
-// Consulta SQL
-$query = "
-    SELECT 
-        products.id AS product_id,
-        products.name AS product_name,
-        products.price AS product_price,
-        orders.status AS order_status,
-        orders.date AS order_date
-    FROM 
-        products
-    LEFT JOIN 
-        orders ON products.id = orders.product_id
-    ORDER BY 
-        products.id";
+// Pegando os parâmetros de filtro e ordenação da URL
+$filter_name = isset($_GET['name']) ? $_GET['name'] : '';
+$filter_price = isset($_GET['price']) ? $_GET['price'] : '';
+$sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'id'; // Ordenar por ID por padrão
+$sort_order = isset($_GET['sort_order']) ? $_GET['sort_order'] : 'ASC'; // Ordem crescente por padrão
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Página atual
+$limit = 20; // Limite de 20 produtos por página
+$offset = ($page - 1) * $limit; // Offset para paginação
 
-// Preparar e verificar a consulta
+// Criando a consulta com filtros e ordenação
+$query = "SELECT * FROM products WHERE name LIKE ? AND price LIKE ? ORDER BY $sort_by $sort_order LIMIT $limit OFFSET $offset";
+
+// Preparando a consulta
 $stmt = $conn->prepare($query);
-if (!$stmt) {
-    die("Erro na preparação da consulta: " . $conn->error);
-}
-
+$filter_name = "%$filter_name%";
+$filter_price = "%$filter_price%";
+$stmt->bind_param("ss", $filter_name, $filter_price);
 $stmt->execute();
 $result = $stmt->get_result();
-if (!$result) {
-    die("Erro ao executar a consulta: " . $stmt->error);
-}
+
+// Contando o total de produtos para a paginação
+$count_query = "SELECT COUNT(*) FROM products WHERE name LIKE ? AND price LIKE ?";
+$count_stmt = $conn->prepare($count_query);
+$count_stmt->bind_param("ss", $filter_name, $filter_price);
+$count_stmt->execute();
+$count_result = $count_stmt->get_result();
+$total_items = $count_result->fetch_row()[0];
+$total_pages = ceil($total_items / $limit); // Calculando o número total de páginas
+
 ?>
 
 <!DOCTYPE html>
@@ -52,7 +55,7 @@ if (!$result) {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #d4d4d4;
             margin: 0;
             padding: 0;
             display: flex;
@@ -131,47 +134,66 @@ if (!$result) {
 <header>
     <div style="background-color: #800020; display: flex; align-items: center; justify-content: space-between; padding: 0 10px;">
         <a href="logout.php" style="background-color: black; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-size: 14px;">Sair</a>
-        <h1 style="margin: 0; flex-grow: 1; text-align: center;">Painel de Vendas</h1>
+        <h1 style="margin: 0; flex-grow: 1; text-align: center;">Site de Vendas</h1>
+        <span style="font-size: 14px; color: white;">
+            Logado como: <?php echo ($role == 'vendedor') ? 'Vendedor' : 'Cliente'; ?>
+        </span>
     </div>
 </header>
 
 <div class="content">
-    <?php if ($role == 'vendedor' || $role == 'cliente') { ?>
-        <a href="user_adm.php" class="btn center-btn">Área Administrativa</a>
-    <?php } ?>
+    <a href="pedidos.php" class="btn center-btn">Ver pedidos</a>
+    <br><br>
+    <h2>Vendas</h2>
 
-    <h2>Meus Pedidos</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Produto</th>
-            <th>Preço</th>
-            <th>Status</th>
-            <th>Data</th>
-            <?php if ($role == 'vendedor') { ?>
-                <th>Ação</th>
-            <?php } ?>
-        </tr>
-        <?php while ($order = $result->fetch_assoc()) { ?>
+    <!-- Filtros -->
+    <form method="get" action="">
+    <label for="name">Nome:</label>
+    <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($filter_name, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome do produto">
+    <label for="price">Preço:</label>
+    <input type="text" name="price" id="price" value="<?php echo htmlspecialchars($filter_price, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Preço do produto">
+    <button type="submit" class="btn">Filtrar</button>
+</form>
+
+
+    <!-- Tabela -->
+    <form method="post" action="pedidos.php">
+        <table>
             <tr>
-                <td><?php echo htmlspecialchars($order['product_id']); ?></td>
-                <td><?php echo htmlspecialchars($order['product_name']); ?></td>
-                <td><?php echo htmlspecialchars($order['product_price']); ?></td>
-                <td><?php echo htmlspecialchars($order['order_status']); ?></td>
-                <td><?php echo htmlspecialchars($order['order_date']); ?></td>
-                <?php if ($role == 'vendedor') { ?>
-                    <td>
-                        <a href="editar_pedido.php?id=<?php echo htmlspecialchars($order['product_id']); ?>" class="action-link">Editar Pedido</a>
-                    </td>
-                <?php } ?>
+                <th><a href="?name=<?php echo urlencode($filter_name); ?>&price=<?php echo urlencode($filter_price); ?>&sort_by=id&sort_order=<?php echo $sort_order === 'ASC' ? 'DESC' : 'ASC'; ?>">ID</a></th>
+                <th><a href="?name=<?php echo urlencode($filter_name); ?>&price=<?php echo urlencode($filter_price); ?>&sort_by=name&sort_order=<?php echo $sort_order === 'ASC' ? 'DESC' : 'ASC'; ?>">Nome</a></th>
+                <th><a href="?name=<?php echo urlencode($filter_name); ?>&price=<?php echo urlencode($filter_price); ?>&sort_by=price&sort_order=<?php echo $sort_order === 'ASC' ? 'DESC' : 'ASC'; ?>">Preço</a></th>
             </tr>
+            <?php while ($product = $result->fetch_assoc()) { ?>
+                <tr>
+                    <td><input type="checkbox" name="product_ids[]" value="<?php echo htmlspecialchars($product['id']); ?>"></td>
+                    <td><?php echo htmlspecialchars($product['id']); ?></td>
+                    <td><?php echo htmlspecialchars($product['name']); ?></td>
+                    <td><?php echo htmlspecialchars($product['price']); ?></td>
+                </tr>
+            <?php } ?>
+        </table>
+
+        <button type="submit" class="btn center-btn">Fazer Pedido</button>
+    </form>
+
+    <!-- Paginação -->
+    <div class="pagination">
+        <?php if ($page > 1) { ?>
+            <a href="?name=<?php echo urlencode($filter_name); ?>&price=<?php echo urlencode($filter_price); ?>&page=<?php echo $page - 1; ?>&sort_by=<?php echo $sort_by; ?>&sort_order=<?php echo $sort_order; ?>">Anterior</a>
         <?php } ?>
-    </table>
+        Página <?php echo $page; ?> de <?php echo $total_pages; ?>
+        <?php if ($page < $total_pages) { ?>
+            <a href="?name=<?php echo urlencode($filter_name); ?>&price=<?php echo urlencode($filter_price); ?>&page=<?php echo $page + 1; ?>&sort_by=<?php echo $sort_by; ?>&sort_order=<?php echo $sort_order; ?>">Próximo</a>
+        <?php } ?>
+    </div>
 </div>
+
 </body>
 </html>
 
 <?php
 $stmt->close();
+$count_stmt->close();
 $conn->close();
 ?>

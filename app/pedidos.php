@@ -15,6 +15,23 @@ if ($conn->connect_error) {
 $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_ids'])) {
+    // Crie o pedido na tabela orders
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, status) VALUES (?, 'pendente')");
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $order_id = $stmt->insert_id; // ID do pedido recém-criado
+    $stmt->close();
+
+    // Vincule os produtos ao pedido
+    $stmt = $conn->prepare("INSERT INTO order_products (order_id, product_id) VALUES (?, ?)");
+    foreach ($_POST['product_ids'] as $product_id) {
+        $stmt->bind_param('ii', $order_id, $product_id);
+        $stmt->execute();
+    }
+    $stmt->close();
+}
+
 $stmt = $conn->prepare("SELECT * FROM orders ORDER BY created_at DESC");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -25,11 +42,11 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Vendas</title>
+    <title>Área Administrativa</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #d4d4d4;
             margin: 0;
             padding: 0;
             display: flex;
@@ -108,35 +125,48 @@ $result = $stmt->get_result();
 <header>
     <div style="background-color: #800020; display: flex; align-items: center; justify-content: space-between; padding: 0 10px;">
         <a href="logout.php" style="background-color: black; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-size: 14px;">Sair</a>
-        <h1 style="margin: 0; flex-grow: 1; text-align: center;">Painel de Vendas</h1>
+        <h1 style="margin: 0; flex-grow: 1; text-align: center;">Site de Vendas</h1>
+        <span style="font-size: 14px; color: white;">
+            Logado como: <?php echo ($role == 'vendedor') ? 'Vendedor' : 'Cliente'; ?>
+        </span>
     </div>
 </header>
 
 <div class="content">
-    <a href="vendas.php" class="btn center-btn">Voltar para Painel de Vendas</a>
+    <a href="vendas.php" class="btn center-btn">Voltar para Produtos</a>
     <br><br>
-    <h2>Área Administrativa</h2>
-        <table>
+    <h2>Pedidos</h2>
+    <table>
+    <tr>
+        <th>Pedido</th>
+        <th>Status</th>
+        <th>Data</th>
+        <th>Ação</th>
+    </tr>
+    <?php while ($order = $result->fetch_assoc()) { ?>
         <tr>
-            <th>Compra</th>
-            <th>Status</th>
-            <th>Data</th>
-            <?php if ($role == 'vendedor' || $role == 'cliente') { ?>
-                <th>Ação</th>
-            <?php } ?>
+            <td><?php echo htmlspecialchars($order['id']); ?></td>
+            <td><?php echo htmlspecialchars($order['status']); ?></td>
+            <td><?php echo htmlspecialchars($order['created_at']); ?></td>
+            <td>
+                <!-- Botão Alterar Status -->
+                <form action="editar_pedido.php" method="GET" style="display:inline;">
+                    <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
+                    <button type="submit" style="background-color: #007BFF; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
+                        Alterar Status
+                    </button>
+                </form>
+                
+                <!-- Botão Deletar -->
+                <form action="deletar_pedido.php" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este pedido?');">
+                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                    <button type="submit" style="background-color: #FF0000; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
+                        Deletar
+                    </button>
+                </form>
+            </td>
         </tr>
-        <?php while ($order = $result->fetch_assoc()) { ?>
-            <tr>
-                <td><?php echo htmlspecialchars($order['id']); ?></td>
-                <td><?php echo htmlspecialchars($order['status']); ?></td>
-                <td><?php echo htmlspecialchars($order['created_at']); ?></td>
-                <?php if ($role == 'vendedor' || $role == 'cliente') { ?>
-                    <td>
-                        <a href="editar_pedido.php?id=<?php echo htmlspecialchars($order['id']); ?>" class="action-link">Editar Pedido</a>
-                    </td>
-                <?php } ?>
-            </tr>
-        <?php } ?>
+    <?php } ?>
     </table>
 </div>
 </body>

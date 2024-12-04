@@ -100,14 +100,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form method="POST" action="login.php">
-            <input type="text" name="username" placeholder="Usuário" required>
-            <input type="password" name="password" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
-        </form>
-        <?php if (isset($error)) echo "<p>$error</p>"; ?>
-    </div>
+<div class="login-container">
+    <h1>Login</h1>
+    <form method="POST" action="login.php">
+        <input type="text" name="username" placeholder="Usuário" required>
+        <input type="password" name="password" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+    </form>
+    <?php if (isset($error)) echo "<p>$error</p>"; ?>
+    <br>
+    <a href="criar_conta.php"><button type="button">Criar Conta</button></a>
+</div>
+
 </body>
 </html>
