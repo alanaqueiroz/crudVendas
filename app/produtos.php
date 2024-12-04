@@ -1,49 +1,66 @@
 <?php
-session_start();
+    session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit();
+    }
 
-$conn = new mysqli('localhost', 'root', '', 'sistema_vendas');
+    $conn = new mysqli('localhost', 'root', '', 'sistema_vendas');
 
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
-}
+    if ($conn->connect_error) {
+        die("Falha na conexão: " . $conn->connect_error);
+    }
 
-$user_id = $_SESSION['user_id'];
-$role = $_SESSION['role'];
+    $user_id = $_SESSION['user_id'];
+    $role = $_SESSION['role'];
 
-// Pegando os parâmetros de filtro e ordenação da URL
-$filter_name = isset($_GET['name']) ? $_GET['name'] : '';
-$filter_price = isset($_GET['price']) ? $_GET['price'] : '';
-$sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'id'; // Ordenar por ID por padrão
-$sort_order = isset($_GET['sort_order']) ? $_GET['sort_order'] : 'ASC'; // Ordem crescente por padrão
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Página atual
-$limit = 20; // Limite de 20 produtos por página
-$offset = ($page - 1) * $limit; // Offset para paginação
+    // Pegando os parâmetros de filtro e ordenação da URL
+    $filter_name = isset($_GET['name']) ? $_GET['name'] : '';
+    $filter_price = isset($_GET['price']) ? $_GET['price'] : '';
+    $sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'id'; // Ordenar por ID por padrão
+    $sort_order = isset($_GET['sort_order']) ? $_GET['sort_order'] : 'ASC'; // Ordem crescente por padrão
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Página atual
+    $limit = 20; // Limite de 20 produtos por página
+    $offset = ($page - 1) * $limit; // Offset para paginação
 
-// Criando a consulta com filtros e ordenação
-$query = "SELECT * FROM products WHERE name LIKE ? AND price LIKE ? ORDER BY $sort_by $sort_order LIMIT $limit OFFSET $offset";
+    // Verifica se o filtro de preço foi informado e ajusta para pegar apenas a parte inteira
+    if (!empty($filter_price)) {
+        $filter_price = str_replace(',', '', $filter_price);
+        $filter_price = floor(floatval($filter_price));
+        $min_price = (int)$filter_price;
+        $max_price = $min_price + 1;
+    } else {
+        $min_price = 0;
+        $max_price = PHP_INT_MAX;
+    }
+    
+    // Agora, sua consulta SQL usará $min_price e $max_price corretamente
+    $query = "SELECT * FROM products WHERE name LIKE ? AND price >= ? AND price < ? ORDER BY $sort_by $sort_order LIMIT ? OFFSET ?";
+    $stmt = $conn->prepare($query);
+    
+    // Validar consulta preparada
+    if (!$stmt) {
+        die("Erro na preparação da consulta: " . $conn->error);
+    }
+    
+    // Adicionar caracteres '%' ao filtro para SQL
+    $sql_filter_name = "%$filter_name%";
+    
+    // Vincular parâmetros na consulta
+    $stmt->bind_param("ssiii", $sql_filter_name, $min_price, $max_price, $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
 
-// Preparando a consulta
-$stmt = $conn->prepare($query);
-$filter_name = "%$filter_name%";
-$filter_price = "%$filter_price%";
-$stmt->bind_param("ss", $filter_name, $filter_price);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Contando o total de produtos para a paginação
-$count_query = "SELECT COUNT(*) FROM products WHERE name LIKE ? AND price LIKE ?";
-$count_stmt = $conn->prepare($count_query);
-$count_stmt->bind_param("ss", $filter_name, $filter_price);
-$count_stmt->execute();
-$count_result = $count_stmt->get_result();
-$total_items = $count_result->fetch_row()[0];
-$total_pages = ceil($total_items / $limit); // Calculando o número total de páginas
-
+    // Contando o total de produtos para a paginação
+    $count_query = "SELECT COUNT(*) FROM products WHERE name LIKE ? AND price >= ? AND price < ?";
+    $count_stmt = $conn->prepare($count_query);
+    $count_stmt->bind_param("ssi", $filter_name, $min_price, $max_price);
+    $count_stmt->execute();
+    $count_result = $count_stmt->get_result();
+    $total_items = $count_result->fetch_row()[0];
+    $total_pages = ceil($total_items / $limit); // Calculando o número total de páginas
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +68,7 @@ $total_pages = ceil($total_items / $limit); // Calculando o número total de pá
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Painel de Vendas</title>
+        <title>Produtos</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -145,16 +162,17 @@ $total_pages = ceil($total_items / $limit); // Calculando o número total de pá
         <div class="content">
             <a href="pedidos.php" class="btn center-btn">Ver Pedidos</a>
             <br><br>
-            <h2>Produtos á Venda</h2>
+            <h2>Produtos à Venda</h2>
 
             <!-- Filtros -->
             <form method="get" action="">
-            <label for="name">Nome:</label>
-            <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($filter_name, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome do produto">
-            <label for="price">Preço:</label>
-            <input type="text" name="price" id="price" value="<?php echo htmlspecialchars($filter_price, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Preço do produto">
-            <button type="submit" class="btn">Filtrar</button>
-        </form>
+                <label for="name">Nome:</label>
+                <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($filter_name, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Nome do produto">
+                <label for="price">Preço:</label>
+                <input type="text" name="price" id="price" value="<?php echo htmlspecialchars($filter_price, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Preço do produto">
+                <button type="submit" class="btn">Filtrar</button>
+            </form>
+
             <form method="post" action="pedidos.php">
             <table>
             <tr>

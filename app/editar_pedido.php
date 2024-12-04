@@ -18,6 +18,7 @@
     // Função para buscar o pedido com base no papel do usuário
     function fetchOrder($conn, $order_id, $user_id, $role) {
         if ($role == 'cliente') {
+            // Verifica se o pedido pertence ao cliente
             $stmt = $conn->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?");
             $stmt->bind_param('ii', $order_id, $user_id);
         } else {
@@ -42,14 +43,20 @@
     $user_id = $_SESSION['user_id'];
     $role = $_SESSION['role'];
 
-    $order = fetchOrder($conn, $order_id, $user_id, $role)->fetch_assoc();
+    // Buscar o pedido do banco de dados
+    $result = fetchOrder($conn, $order_id, $user_id, $role);
+    $order = $result->fetch_assoc();
 
     if ($order) {
+        // Verificar se o status do pedido é "pendente"
         if ($order['status'] == 'pendente') {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $new_status = $_POST['status'];
                 if (updateOrderStatus($conn, $order_id, $new_status)) {
                     $success_message = "Pedido alterado com sucesso!";
+                    // Redireciona para a página pedidos.php após sucesso
+                    header("Location: pedidos.php");
+                    exit();
                 } else {
                     $error_message = "Erro ao alterar pedido!";
                 }
@@ -58,6 +65,7 @@
             $error_message = "O pedido só pode ser alterado se estiver PENDENTE.";
         }
     } else {
+        // Caso o pedido não seja encontrado, a mensagem de erro será mostrada
         $error_message = "Pedido não encontrado.";
     }
 
@@ -69,7 +77,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Editar Pedido</title>
+        <title>Alterar Status</title>
         <style>
             body {
                 font-family: Arial, sans-serif;

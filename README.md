@@ -6,12 +6,22 @@ Este projeto é a resolução do desafio do processo seletivo para a vaga de pro
 
 Consiste na implementação uma aplicação Web utilizando o framework PHP Laravel, e o banco de dados relacional, desenvolvendo em um ambiente Docker.
 
-**Tecnologias:** Docker, Laravel, PHP, HTML, CSS, Javascript, MySQL
+Tecnologias: Docker, Laravel, PHP, HTML, CSS, Javascript, MySQL.
 
 - Data de Início: `02/12/2024`
 - Data de Conclusão: `04/12/2024`
 
-Confira o Desafio: [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/README/Arquivo-TestePHP.pdf)
+**Desafio:** [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/README/Arquivo-TestePHP.pdf)
+
+---
+
+## Demostração
+
+Demonstração do projeto funcionando. Exibição da tabela com os dados do banco, logado como cliente, e demonstração das permissões:
+
+<p align="center">
+  <img src="README/demo.gif" alt="GIF de demonstração">
+</p>
 
 ---
 
@@ -25,13 +35,13 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 │   ├── service.pecas (API REST Laravel)
 │   ├── Services/ 
 │   │   └── ProductService.php (Configuração Url de consulta de item)
-│   ├── criar_conta.php (Criar um nova conta)
-│   ├── editar_pedido.php (CRUD: Tela excluir o pedido)
-│   ├── editar_pedido.php (CRUD: Tela editar o status)
-│   ├── login.php (Tela de login)
-│   ├── logout.php (Deslogar)
-│   ├── pedidos.php (Exibição de pedidos realizados)
-│   ├── produtos.php (Exibição dos 20 produtos disponíveis)
+│   ├── criar_conta.php
+│   ├── editar_pedido.php
+│   ├── editar_pedido.php
+│   ├── login.php
+│   ├── logout.php
+│   ├── pedidos.php
+│   ├── produtos.php
 ├── docker/
 │   ├── nginx/
 │   │   └── default.conf
@@ -43,7 +53,7 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 ├── .env (Acesso ao banco)
 ├── banco.sql (Comandos SQL para criação do Banco de Dadados)
 ├── docker-compose.yml (Estruturação containers)
-└── modelagem.mwb (Modelagem do banco por MySQL Workbench)
+└── modelagem.mwb (Modelo conceitual do banco por MySQL Workbench)
 ```
 
 ### Detalhes dos Arquivos
@@ -60,6 +70,25 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 
 3. **default.conf** (dentro de `docker/nginx/`)  
    Configuração do Nginx para servir a aplicação Laravel.
+
+### Telas
+- `criar_conta.php`: Criar um nova conta do tipo "Vendedor" ou "Cliente"
+- `editar_pedido.php`: CRUD excluir pedido
+- `editar_pedido.php`: CRUD editar status
+- `login.php`: Tela de login
+- `logout.php`: Deslogar
+- `pedidos.php`: Exibição de pedidos realizados por meio da tela produtos.php
+- `produtos.php`: Exibição de 20 produtos disponíveis para venda, que são filtráveis e ordenáveis. É possível fazer um pedido selecionando as checkbox dos produtos desejados e clicando botão "Fazer pedido".
+
+### Operações CRUD
+CRUD de Clientes: Criar, alterar, deletar e listar
+
+CRUD de pedido: Criar, alterar, deletar e listar
+
+- **Criar**: (Na tela `produtos.php`, ao selecionar os produtos que deseja comprar, e clicar no botão "Fazer Pedido", gera um novo pedido na pagina `pedidos.php`),(Na tela `criar_conta.php` também é possível criar uma nota conta **("INSERT INTO users (username, password, role) VALUES (?, ?, ?)")**). 
+- **Alterar**: (Na tela `pedidos.php`, ao cliclar no botão "Alterar Status" no pedido com status Pendente, vai para a pagina `editar_pedido.php`, onde é possível alterar seu status por meio do código `editar_pedido.php **("UPDATE orders SET status = ? WHERE id = ?")**). 
+- **Deletar**: (Na tela `pedidos.php`, ao cliclar no potão deletar em um pedido, ele é excluído através do código no `deletar_pedido.php` **("DELETE FROM orders WHERE id = ?")**).
+- **Listar**: (Na tela `produtos.php`, há uma paginação de 20 produtos filtráveis e ordenáveis ao cliclar no título de cada coluna**("SELECT * FROM products WHERE name LIKE ? AND price LIKE ? ORDER BY $sort_by $sort_order LIMIT $limit OFFSET $offset";)**).
 
 ---
 
@@ -147,12 +176,14 @@ CREATE TABLE orders (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabela de Produtos (opcional apenas como historico se quiser salvar produtos localmente)
+-- Tabela de Produtos (LOCALMENTE: em caso de não usar API)
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL
 );
+
+-- OU
 
 -- Tabela de Produtos (EXTERNO: criar dentro da API REST)
 CREATE TABLE produtos (
@@ -177,8 +208,6 @@ CREATE TABLE order_products (
 );
 ```
 O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto ([banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql)).
-
----
 
 ## Acesso ao projeto
 
@@ -219,14 +248,15 @@ docker-compose up -d
 
 ### 4. Crie o banco de dados
 
-No diretório principal desse projeto, o arquivo SQL [banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql), contem os comandos necessarios para criar o banco. Para criar o banco, rode os comandos em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
+- No diretório principal desse projeto, o arquivo SQL [banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql), contem os comandos necessarios para criar o banco. Para criar o banco, rode os comandos em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
 
-Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:8888`, conforme a porta configurada do arquivo `docker-composer.yml`.
+- Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:8888`, conforme a porta configurada do arquivo `docker-composer.yml`.
 
 ### 5. Rodando o Projeto
 
 - Servidor Local: Você pode visualizar o projeto em um servidor local, por exemplo o [XAMPP](https://www.apachefriends.org/download.html), colocando a pasta do projeto dentro da pasta `htdocs` e acessar a url `http://localhost/testephp-hcosta/app/login.php`. Para funcionar é necessário ligar as portas Apache e MySQL.
-- Ou se preferir é possível acessar o projeto pela porta `8585` configurada no ngix do `docker-compose.yml`
+
+- Ou se preferir, é possível acessar o projeto pela porta `8585` configurada no ngix do `docker-compose.yml`
 
 ---
 
@@ -322,11 +352,6 @@ docker-compose up -d
 CRUD de Clientes: Criar, alterar, deletar e listar
 
 CRUD de pedido: Criar, alterar, deletar e listar
-
-- **Criar**: (Na tela `produtos.php`, ao selecionar os produtos que deseja comprar, e clicar no botão "Fazer Pedido", gera um novo pedido na pagina `pedidos.php`). 
-- **Alterar**: (Na tela `pedidos.php`, ao cliclar no botão "Alterar Status" no pedido com status Pendente, vai para a pagina `editar_pedido.php`, onde é possível alterar seu status). 
-- **Deletar**: (Na tela `pedidos.php`, ao cliclar no potão deletar em um pedido, ele é excluído)
-- **Listar**: (Na tela `produtos.php`, há uma paginação de 20 produtos filtráveis e ordenáveis).
 
 ### 10. Aplicação do conceito Clean Code
 

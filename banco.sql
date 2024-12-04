@@ -22,12 +22,14 @@ CREATE TABLE orders (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Tabela de Produtos (opcional apenas como historico se quiser salvar produtos localmente)
+-- Tabela de Produtos (LOCALMENTE: em caso de não usar API)
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL
 );
+
+-- OU
 
 -- Tabela de Produtos (EXTERNO: criar dentro da API REST)
 CREATE TABLE produtos (
