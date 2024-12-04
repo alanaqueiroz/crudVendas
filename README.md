@@ -4,22 +4,14 @@
 
 Este projeto é a resolução do desafio do processo seletivo para a vaga de programador PHP/Laravel na empresa HCOSTA. 
 
-Consiste na implementação uma aplicação Web utilizando o framework PHP Laravel, e o banco de dados relacional MySQL, desenvolvendo em um ambiente Docker. 
+Consiste na implementação uma aplicação Web utilizando o framework PHP Laravel, e o banco de dados relacional, desenvolvendo em um ambiente Docker.
+
+**Tecnologias:** Docker, Laravel, PHP, HTML, CSS, Javascript, MySQL
 
 - Data de Início: `02/12/2024`
 - Data de Conclusão: `04/12/2024`
 
 Confira o Desafio: [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/README/Arquivo-TestePHP.pdf)
-
-### O que foi aplicado?
-
-- **Tecnologias:** Docker, Laravel, PHP, HTML, CSS, Javascript.
-
-- **Clean-Code:** 
-  - **Nomes**: Foram usados nomes significativos nas variáveis, funções e classes, refletindo seu propósito claramente.
-  - **Legibilidade**: O código possui uma arquitetura facilmente compreensível.
-  - **Comentários**: Foram realizados comentários esclarecedores nos códigos.
-  - **Formatação**: Código uniforme de forma identada e com espeçamentos, facilitando a leitura.
 
 ---
 
@@ -41,12 +33,13 @@ Aqui está a estrutura de pastas e a explicação de suas funções:
 │   ├── service.pecas (API REST Laravel)
 │   ├── Services/ 
 │   │   └── ProductService.php (Configuração Url de consulta de item)
-│   ├── cliente.php (Tela CRUD para Editar e Deletar)
-│   ├── editar_pedido.php (Tela para edição do status)
+│   ├── criar_conta.php (Criar um nova conta)
+│   ├── editar_pedido.php (CRUD: Tela excluir o pedido)
+│   ├── editar_pedido.php (CRUD: Tela editar o status)
 │   ├── login.php (Tela de login)
 │   ├── logout.php (Deslogar)
-│   ├── user_adm.php (Exibição de pedidos para edição de status)
-│   ├── vendas.php (Exibição dos pedidos do cliente)
+│   ├── pedidos.php (Exibição de pedidos realizados)
+│   ├── produtos.php (Exibição dos 20 produtos disponíveis)
 ├── docker/
 │   ├── nginx/
 │   │   └── default.conf
@@ -190,7 +183,7 @@ CREATE TABLE order_products (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 ```
-O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto: [banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql).
+O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto ([banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql)).
 
 ---
 
@@ -233,7 +226,7 @@ docker-compose up -d
 
 ### 4. Crie o banco de dados
 
-No diretório principal desse projeto, há um arquivo SQL com o nome [banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql), nele deixei os comandos necessarios para criar o banco. Rode-os em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
+No diretório principal desse projeto, o arquivo SQL [banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql), contem os comandos necessarios para criar o banco. Para criar o banco, rode os comandos em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
 
 Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:8888`, conforme a porta configurada do arquivo `docker-composer.yml`.
 
@@ -299,4 +292,10 @@ server {
     }
 }
 ```
----
+### Foi aplicado:
+
+- **Clean-Code:** 
+  - **Nomes**: Foram usados nomes significativos nas variáveis, funções e classes, refletindo seu propósito claramente.
+  - **Legibilidade**: O código possui uma arquitetura facilmente compreensível.
+  - **Comentários**: Foram realizados comentários esclarecedores nos códigos.
+  - **Formatação**: Código uniforme de forma identada e com espeçamentos, facilitando a leitura.
