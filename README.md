@@ -88,7 +88,7 @@ CRUD de pedido: Criar, alterar, deletar e listar
 - **Criar**: (Na tela `produtos.php`, ao selecionar os produtos que deseja comprar, e clicar no botão "Fazer Pedido", gera um novo pedido na pagina `pedidos.php`),(Na tela `criar_conta.php` também é possível criar uma nota conta **("INSERT INTO users (username, password, role) VALUES (?, ?, ?)")**). 
 - **Alterar**: (Na tela `pedidos.php`, ao cliclar no botão "Alterar Status" no pedido com status Pendente, vai para a pagina `editar_pedido.php`, onde é possível alterar seu status por meio do código `editar_pedido.php **("UPDATE orders SET status = ? WHERE id = ?")**). 
 - **Deletar**: (Na tela `pedidos.php`, ao cliclar no potão deletar em um pedido, ele é excluído através do código no `deletar_pedido.php` **("DELETE FROM orders WHERE id = ?")**).
-- **Listar**: (Na tela `produtos.php`, há uma paginação de 20 produtos filtráveis e ordenáveis ao cliclar no título de cada coluna**("SELECT * FROM products WHERE name LIKE ? AND price LIKE ? ORDER BY $sort_by $sort_order LIMIT $limit OFFSET $offset";)**).
+- **Listar**: (Na tela `produtos.php`, há uma paginação de 20 produtos filtráveis e ordenáveis ao cliclar no título de cada coluna **("SELECT * FROM products WHERE name LIKE ? AND price LIKE ? ORDER BY $sort_by $sort_order LIMIT $limit OFFSET $offset";)**).
 
 ---
 
