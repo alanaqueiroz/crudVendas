@@ -6,7 +6,7 @@ Este projeto é a resolução do desafio do processo seletivo para a vaga de pro
 
 Consiste na implementação uma aplicação Web utilizando o framework PHP Laravel, e o banco de dados relacional, desenvolvendo em um ambiente Docker.
 
-Tecnologias: Docker, Laravel, PHP, HTML, CSS, Javascript, MySQL.
+Tecnologias: Docker, Laravel, PHP, HTML, CSS, MySQL.
 
 - Data de Início: `02/12/2024`
 - Data de Conclusão: `04/12/2024`
