@@ -2,9 +2,9 @@
 
 ## Descrição
 
-Este projeto é a resolução do desafio do processo seletivo para a vaga de programador PHP/Laravel na empresa HCOSTA. 
+Este projeto é a resolução do desafio proposto no processo seletivo para a vaga de Programador PHP na empresa HCosta. 
 
-Consiste na implementação uma aplicação Web utilizando o framework PHP Laravel, e o banco de dados relacional, desenvolvendo em um ambiente Docker.
+Consiste na implementação de uma aplicação web desenvolvida em ambiente Docker, utilizando o framework PHP Laravel e um banco de dados relacional.
 
 Tecnologias: Docker, Laravel, PHP, HTML, CSS, MySQL.
 
@@ -17,7 +17,7 @@ Tecnologias: Docker, Laravel, PHP, HTML, CSS, MySQL.
 
 ## Demostração
 
-Demonstração do projeto funcionando. Exibição da tabela com os dados do banco, logado como cliente, e demonstração das permissões:
+Demonstração do projeto funcionando. Exibição da tabela com os dados do banco e permissões, logado como cliente:
 
 <p align="center">
   <img src="README/demo.gif" alt="GIF de demonstração">
@@ -30,7 +30,7 @@ Demonstração do projeto funcionando. Exibição da tabela com os dados do banc
 Aqui está a estrutura de pastas e a explicação de suas funções:
 
 ```
-/testephp-hcosta
+/crud-vendas
 ├── app/
 │   ├── service.pecas (API REST Laravel)
 │   ├── Services/ 
@@ -101,7 +101,7 @@ DER (Diagrama Entidade-Relacionamento)
 
 ![Modelo Conceitual](README/modelo-conceitual.png)
 
- O Arquivo do modelo conceitual desenvolvido no [MySQL WorkBench](https://dev.mysql.com/downloads/workbench/), se encontra na pasta princiapl do projeto com o titulo `modelagem.mwb`
+ O Arquivo do modelo conceitual desenvolvido no [MySQL WorkBench](https://dev.mysql.com/downloads/workbench/), se encontra na pasta principal do projeto com o titulo `modelagem.mwb`
 
 ### Modelo Lógico
 
