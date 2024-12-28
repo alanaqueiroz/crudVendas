@@ -11,7 +11,7 @@ Tecnologias: Docker, Laravel, PHP, HTML, CSS, MySQL.
 - Data de Início: `02/12/2024`
 - Data de Conclusão: `04/12/2024`
 
-**Desafio:** [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/README/Arquivo-TestePHP.pdf)
+**Desafio:** [Arquivo-TestePHP.pdf](https://github.com/alanaqueiroz/crud-vendas/blob/main/README/Arquivo-TestePHP.pdf)
 
 ---
 
@@ -207,7 +207,7 @@ CREATE TABLE order_products (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 ```
-O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto ([banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql)).
+O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto ([banco.sql](https://github.com/alanaqueiroz/crud-vendasblob/main/banco.sql)).
 
 ## Acesso ao projeto
 
@@ -236,8 +236,8 @@ Para rodar o projeto, certifique-se de ter os seguintes softwares instalados em 
 
 Clonar o projeto:
 ```bash
-git clone https://github.com/alanaqueiroz/testephp-hcosta.git
-cd testephp-hcosta
+git clone https://github.com/alanaqueiroz/crud-vendas.git
+cd crud-vendas
 ```
 ### 3. Suba os Contêineres
 
@@ -248,13 +248,13 @@ docker-compose up -d
 
 ### 4. Crie o banco de dados
 
-- No diretório principal desse projeto, o arquivo SQL [banco.sql](https://github.com/alanaqueiroz/testephp-hcosta/blob/main/banco.sql), contem os comandos necessarios para criar o banco. Para criar o banco, rode os comandos em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
+- No diretório principal desse projeto, o arquivo SQL [banco.sql](https://github.com/alanaqueiroz/crud-vendas/blob/main/banco.sql), contem os comandos necessarios para criar o banco. Para criar o banco, rode os comandos em um gerenciador de banco de dados da sua preferência. Exemplo: [MySQL-Front](https://mysql-front.software.informer.com/download/).
 
 - Caso opte por gerar o banco pelo phpMyAdmin, ele fica disponível `localhost:8888`, conforme a porta configurada do arquivo `docker-composer.yml`.
 
 ### 5. Rodando o Projeto
 
-- Servidor Local: Você pode visualizar o projeto em um servidor local, por exemplo o [XAMPP](https://www.apachefriends.org/download.html), colocando a pasta do projeto dentro da pasta `htdocs` e acessar a url `http://localhost/testephp-hcosta/app/login.php`. Para funcionar é necessário ligar as portas Apache e MySQL.
+- Servidor Local: Você pode visualizar o projeto em um servidor local, por exemplo o [XAMPP](https://www.apachefriends.org/download.html), colocando a pasta do projeto dentro da pasta `htdocs` e acessar a url `http://localhost/crud-vendas/app/login.php`. Para funcionar é necessário ligar as portas Apache e MySQL.
 
 - Ou se preferir, é possível acessar o projeto pela porta `8585` configurada no ngix do `docker-compose.yml`
 
