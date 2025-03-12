@@ -207,7 +207,7 @@ CREATE TABLE order_products (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 ```
-O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto ([banco.sql](https://github.com/alanaqueiroz/crud-vendasblob/main/banco.sql)).
+O arquivo SQL do **Modelo Físico**, se encontra nas dependências do projeto ([banco.sql](https://github.com/alanaqueiroz/crud-vendas/blob/main/banco.sql)).
 
 ## Acesso ao projeto
 
